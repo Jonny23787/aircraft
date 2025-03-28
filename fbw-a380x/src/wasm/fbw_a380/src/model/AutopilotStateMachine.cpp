@@ -1,4 +1,27 @@
 #include "AutopilotStateMachine.h"
+
+// Function to handle autopilot state machine step logic
+void AutopilotStateMachine::step()
+{
+    // Check if in direct law - add at start of step() function
+    if (AutopilotStateMachine_U.in.data.in_direct_law) {
+        // Disable autopilot
+        AutopilotStateMachine_B.BusAssignment_g.output.enabled_AP1 = 0.0;
+        AutopilotStateMachine_B.BusAssignment_g.output.enabled_AP2 = 0.0;
+
+        // Disable flight directors
+        AutopilotStateMachine_B.BusAssignment_g.input.FD_active = false;
+
+        // Force reset of state machines
+        AutopilotStateMachine_DWork.is_c1_AutopilotStateMachine = AutopilotStateMachine_IN_OFF;
+        AutopilotStateMachine_DWork.is_c6_AutopilotStateMachine = AutopilotStateMachine_IN_OFF_o;
+
+        // Return early since AP/FD not available in direct law
+        return;
+    }
+
+    // ... rest of existing step() function code
+}
 #include "rtwtypes.h"
 #include "AutopilotStateMachine_types.h"
 #include <cmath>
