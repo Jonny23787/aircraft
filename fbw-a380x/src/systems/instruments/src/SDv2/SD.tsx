@@ -1,4 +1,4 @@
-//  Copyright (c) 2024 FlyByWire Simulations
+//  Copyright (c) 2024-2025 FlyByWire Simulations
 //  SPDX-License-Identifier: GPL-3.0
 
 import {
@@ -20,6 +20,7 @@ import { SdPages } from '@shared/EcamSystemPages';
 import './style.scss';
 import '../index.scss';
 import { CruisePage } from './Pages/Cruise/CruisePage';
+import { CbPage } from './Pages/CbPage';
 import { SDSimvars } from './SDSimvarPublisher';
 
 export interface SDProps {
@@ -63,14 +64,14 @@ export class SD extends DestroyableComponent<SDProps> {
     null, // WHEEL
     null, // HYD
     null, // FCTL
-    null, // CB
+    <CbPage ref={this.pageRef[SdPages.Cb]} bus={this.props.bus} visible={this.pageVisible[SdPages.Cb]} />,
     <CruisePage ref={this.pageRef[SdPages.Crz]} bus={this.props.bus} visible={this.pageVisible[SdPages.Crz]} />,
     null, // STATUS
     null, // TODO video page
   ];
 
   // Once a page is ported, add its enum value here
-  private readonly indicesToShowInV2 = [SdPages.Crz];
+  private readonly indicesToShowInV2 = [SdPages.Crz, SdPages.Cb];
 
   public onAfterRender(node: VNode): void {
     super.onAfterRender(node);

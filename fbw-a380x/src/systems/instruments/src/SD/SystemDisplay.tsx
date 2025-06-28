@@ -1,4 +1,4 @@
-// Copyright (c) 2023-2024 FlyByWire Simulations
+// Copyright (c) 2023-2025 FlyByWire Simulations
 // SPDX-License-Identifier: GPL-3.0
 
 import React from 'react';
@@ -10,7 +10,6 @@ import { HydPage } from './Pages/Hyd/HydPage';
 import { PressPage } from './Pages/Press/PressPage';
 import { ElecAcPage } from './Pages/ElecAc/ElecAcPage';
 import { FuelPage } from './Pages/FuelPage';
-import { CbPage } from './Pages/CbPage';
 import { ApuPage } from './Pages/Apu/ApuPage';
 import { CondPage } from './Pages/Cond/CondPage';
 import { DoorPage } from './Pages/Doors/DoorPage';
@@ -38,7 +37,7 @@ export const SystemDisplay = () => {
     9: <WheelPage />,
     10: <HydPage />,
     11: <FctlPage />,
-    12: <CbPage />,
+    12: <></>,
     13: <></>,
     14: <StatusPage />,
     15: <VideoPage />,
