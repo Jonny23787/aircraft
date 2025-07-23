@@ -825,7 +825,7 @@ export const EcamAbnormalSensedAta70: { [n: number]: AbnormalProcedure } = {
     items: [],
   },
   700900001: {
-    title: '\x1b<4m\x1b4mENG\x1bm RELIGHT IN FLIGHT',
+    title: '\x1b<4m\x1b4mENG\x1bm RELIGHT IN FLIGHT (WIP)',
     sensed: false,
     items: [
       {
@@ -1075,7 +1075,7 @@ export const EcamAbnormalSensedAta70: { [n: number]: AbnormalProcedure } = {
     ],
   },
   700900002: {
-    title: '\x1b<4m\x1b4mENG\x1bm TAIL PIPE FIRE',
+    title: '\x1b<4m\x1b4mENG\x1bm TAIL PIPE FIRE (WIP)',
     sensed: false,
     items: [
       {
