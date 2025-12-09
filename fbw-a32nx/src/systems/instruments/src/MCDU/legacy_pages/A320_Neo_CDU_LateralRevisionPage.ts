@@ -95,7 +95,7 @@ export class CDULateralRevisionPage {
     }
 
     let offsetCell = '';
-    if (isDeparture || isWaypoint) {
+    if (isDeparture || isWaypoint || isPpos) {
       offsetCell = '<OFFSET[color]inop';
     }
 
@@ -131,6 +131,10 @@ export class CDULateralRevisionPage {
           CDUHoldAtPage.ShowPage(mcdu, legIndexFP, forPlan, inAlternate);
         }
       };
+    }
+
+    if (isPpos) {
+      holdCell = '<HOLD[color]inop';
     }
 
     let enableAltnLabel = '';
