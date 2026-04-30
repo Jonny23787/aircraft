@@ -43,6 +43,12 @@ export const StatusArea = () => {
   const fcuLeftDiscreteWord2 = useArinc429Var('L:A32NX_FCU_LEFT_EIS_DISCRETE_WORD_2', 2000);
   const isa = sat.valueOr(0) + Math.min(36089, zp.valueOr(0)) / 500 - 15;
   const loadFactor = useArinc429Var(`L:A32NX_ADIRS_IR_${inertialReferenceSource}_BODY_NORMAL_ACC`, 300);
+  const conditionsMet = loadFactor.value > 1.4 || loadFactor.value < 0.7;
+
+  const fcuDiscreteWord1 = useArinc429Var('L:A32NX_FCU_DISCRETE_WORD_1', 300);
+  const fcuMetersSelected = fcuDiscreteWord1.bitValueOr(20, false);
+  const altitude = useArinc429Var('L:A32NX_FCU_SELECTED_ALTITUDE', 300);
+  const [selAltText, setSelAltText] = useState('');
 
   const [loadFactorSet] = useState(new NXLogicConfirmNode(2));
   const [loadFactorReset] = useState(new NXLogicConfirmNode(5));
@@ -57,7 +63,6 @@ export const StatusArea = () => {
   }, [attHdgSwitch]);
 
   useUpdate((deltaTime) => {
-    const conditionsMet = loadFactor.value > 1.4 || loadFactor.value < 0.7;
     const loadFactorSetValue = loadFactorSet.write(conditionsMet && loadFactor.isNormalOperation(), deltaTime);
     const loadFactorResetValue = loadFactorReset.write(!conditionsMet || !loadFactor.isNormalOperation(), deltaTime);
     const flightPhase = SimVar.GetSimVarValue('L:A32NX_FWC_FLIGHT_PHASE', 'Enum');
@@ -72,6 +77,13 @@ export const StatusArea = () => {
       loadFactorText = (clamped >= 0 ? '+' : '') + clamped.toFixed(1);
     }
     setLoadFactorText(loadFactorText);
+  });
+
+  useUpdate((_deltaTime) => {
+    const currentMetricAlt = Math.round((altitude.value * 0.3048) / 10) * 10;
+    const selAltText = `${currentMetricAlt}`;
+
+    setSelAltText(selAltText);
   });
 
   useEffect(() => {
@@ -216,16 +228,30 @@ export const StatusArea = () => {
             </>
           )}
 
-          {loadFactorVisibleElement && (
-            <g id="LoadFactor">
-              <Text warning x={207} y={64} alignStart>
-                G LOAD
+          {conditionsMet ? (
+            loadFactorVisibleElement && (
+              <g id="LoadFactor">
+                <Text warning x={207} y={64} alignStart>
+                  G LOAD
+                </Text>
+                <Text warning x={392} y={64} alignEnd>
+                  {loadFactorText}
+                </Text>
+              </g>
+            )
+          ) : fcuMetersSelected ? (
+            <g id="SelAlt">
+              <Text title x={209} y={64} alignStart>
+                ALT SEL
               </Text>
-              <Text warning x={392} y={64} alignEnd>
-                {loadFactorText}
+              <Text x={372} y={64} alignEnd>
+                {selAltText}
+              </Text>
+              <Text unit x={387} y={64} alignEnd>
+                M
               </Text>
             </g>
-          )}
+          ) : null}
         </g>
       </svg>
     </div>
