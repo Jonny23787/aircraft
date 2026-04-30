@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import React from 'react';
-import { useSimVar } from '@flybywiresim/fbw-sdk';
+import { useSimVar, useArinc429Var } from '@flybywiresim/fbw-sdk';
 
 import './Door.scss';
 
@@ -13,6 +13,17 @@ export const DoorPage = () => {
   const [cargoLocked] = useSimVar('L:A32NX_FWD_DOOR_CARGO_LOCKED', 'bool', 1000);
   const [oxygen] = useSimVar('L:PUSH_OVHD_OXYGEN_CREW', 'bool', 1000);
   const [slides] = useSimVar('L:A32NX_SLIDES_ARMED', 'bool', 1000);
+
+  const cpc1DiscreteWord = useArinc429Var('L:A32NX_PRESS_CPC_1_DISCRETE_WORD');
+
+  const [autoMode] = useSimVar('L:A32NX_OVHD_PRESS_MODE_SEL_PB_IS_AUTO', 'Bool', 1000);
+
+  const activeCpcNumber = cpc1DiscreteWord.bitValueOr(11, false) ? 1 : 2;
+  const arincCabinVs = useArinc429Var(`L:A32NX_PRESS_CPC_${activeCpcNumber}_CABIN_VS`, 500);
+  const [manCabinVs] = useSimVar('L:A32NX_PRESS_MAN_CABIN_VS', 'feet per minute', 500);
+  const cabinVs = arincCabinVs.isNormalOperation() ? arincCabinVs.value : manCabinVs;
+  const [flightPhase] = useSimVar('L:A32NX_FWC_FLIGHT_PHASE', 'Enum', 1000);
+  const flightPhase567 = flightPhase === 5 || flightPhase === 6 || flightPhase === 7;
 
   return (
     <>
@@ -79,6 +90,14 @@ export const DoorPage = () => {
             strokeDasharray="7,4"
             d="M346, 210 l77 0"
           />
+          <g
+            id="vsArrow"
+            className={flightPhase567 && (cabinVs * 60 <= -50 || cabinVs * 60 >= 50) && autoMode ? '' : 'Hide'}
+            transform={cabinVs * 60 <= -50 ? 'translate(0, 140) scale(1, -1)' : 'scale(1, 1)'}
+          >
+            <path d="M433,80 h7 L446,70" className="VsIndicator" strokeLinejoin="miter" />
+            <polygon points="452,63 447,71 457,71" transform="rotate(38,452,63)" className="VsIndicator" />
+          </g>
         </g>
 
         {/* Texts */}
@@ -191,6 +210,30 @@ export const DoorPage = () => {
           </text>
           <text id="psi_val_right" className="Value" x="538" y="42" textAnchor="middle" alignmentBaseline="central">
             1700
+          </text>
+
+          <text
+            id="cab_vs"
+            x="395"
+            y="80"
+            className={flightPhase567 ? 'Oxygen' : 'Hide'}
+            textAnchor="middle"
+            alignmentBaseline="central"
+          >
+            V/S
+          </text>
+          <text id="CabinVerticalSpeed" className={flightPhase567 ? 'Value' : 'Hide'} x="500" y="86.5" textAnchor="end">
+            {!autoMode ? Math.round(cabinVs / 50) * 50 : Math.abs(Math.round(cabinVs / 50) * 50)}
+          </text>
+          <text
+            id="vs_unit"
+            className={flightPhase567 ? 'Unit' : 'Hide'}
+            x="550"
+            y="80"
+            textAnchor="middle"
+            alignmentBaseline="central"
+          >
+            FT/MIN
           </text>
         </g>
       </svg>
