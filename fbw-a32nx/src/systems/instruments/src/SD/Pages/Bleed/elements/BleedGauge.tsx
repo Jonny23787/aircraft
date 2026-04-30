@@ -33,6 +33,8 @@ const BleedGauge: FC<BleedGaugeProps> = ({ x, y, engine, sdacDatum, packFlowValv
   const packBypassValve = Math.round((fwdCondSelectorKnob / 300) * 100);
   const [fwdCabinTemp] = useSimVar('L:A32NX_COND_FWD_TEMP', 'celsius', 1000);
   const packOutletTemp = Math.round(fwdCabinTemp / 5) * 5;
+  const packIndex = engine > 2 ? 2 : 1;
+  const [packPbOn] = useSimVar(`L:A32NX_OVHD_COND_PACK_${packIndex}_PB_IS_ON`, 'bool', 500);
 
   const radius = 38;
   const startAngle = -63;
@@ -161,7 +163,9 @@ const BleedGauge: FC<BleedGaugeProps> = ({ x, y, engine, sdacDatum, packFlowValv
         x={x}
         y={y}
         radius={15}
-        css="GreenLine BackgroundFill"
+        css={`
+          ${!packFlowValveOpen && packPbOn ? 'AmberLine BackgroundFill' : 'GreenLine BackgroundFill'}
+        `}
         position={packFlowValveOpen ? 'V' : 'H'}
         sdacDatum={sdacDatum}
       />
