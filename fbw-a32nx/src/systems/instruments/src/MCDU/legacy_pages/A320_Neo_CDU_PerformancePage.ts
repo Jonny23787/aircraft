@@ -3,7 +3,7 @@
 //
 // SPDX-License-Identifier: GPL-3.0
 
-import { ApproachUtils, NXUnits, RunwayUtils, ApproachType } from '@flybywiresim/fbw-sdk';
+import { ApproachUtils, NXUnits, RunwayUtils } from '@flybywiresim/fbw-sdk';
 import { FmgcFlightPhase } from '@shared/flightphase';
 import { CDUStepAltsPage } from './A320_Neo_CDU_StepAltsPage';
 import { NXFictionalMessages, NXSystemMessages } from '../messages/NXSystemMessages';
@@ -1015,6 +1015,7 @@ export class CDUPerformancePage {
 
     const isActivePlan = forPlan === FlightPlanIndex.Active;
     const plan = mcdu.getFlightPlan(forPlan);
+    const hasDestination = !!plan.destinationAirport;
 
     const isPhaseActive = mcdu.flightPhaseManager.phase === FmgcFlightPhase.Approach;
 
@@ -1032,48 +1033,61 @@ export class CDUPerformancePage {
     const distanceToDest = mcdu.getDistanceToDestination();
     const closeToDest = distanceToDest !== undefined && distanceToDest <= 180;
 
-    let qnhCell = '[\xa0\xa0][color]cyan';
-    if (Number.isFinite(plan.performanceData.approachQnh.get())) {
-      if (plan.performanceData.approachQnh.get() < 500) {
-        qnhCell = plan.performanceData.approachQnh.get().toFixed(2) + '[color]cyan';
-      } else {
-        qnhCell = plan.performanceData.approachQnh.get().toFixed(0) + '[color]cyan';
+    let qnhCell = '----';
+    if (hasDestination) {
+      qnhCell = '[\xa0\xa0][color]cyan';
+      if (Number.isFinite(plan.performanceData.approachQnh.get())) {
+        if (plan.performanceData.approachQnh.get() < 500) {
+          qnhCell = plan.performanceData.approachQnh.get().toFixed(2) + '[color]cyan';
+        } else {
+          qnhCell = plan.performanceData.approachQnh.get().toFixed(0) + '[color]cyan';
+        }
+      } else if (closeToDest && isActivePlan) {
+        qnhCell = '____[color]amber';
       }
-    } else if (closeToDest && isActivePlan) {
-      qnhCell = '____[color]amber';
+      mcdu.onLeftInput[0] = (value, scratchpadCallback) => {
+        if (mcdu.setPerfApprQNH(value, forPlan)) {
+          CDUPerformancePage.ShowAPPRPage(mcdu, forPlan);
+        } else {
+          scratchpadCallback();
+        }
+      };
     }
-    mcdu.onLeftInput[0] = (value, scratchpadCallback) => {
-      if (mcdu.setPerfApprQNH(value, forPlan)) {
-        CDUPerformancePage.ShowAPPRPage(mcdu, forPlan);
-      } else {
-        scratchpadCallback();
-      }
-    };
 
-    let tempCell = '{cyan}[\xa0]°{end}';
-    if (Number.isFinite(plan.performanceData.approachTemperature.get())) {
-      tempCell =
-        '{cyan}' +
-        (plan.performanceData.approachTemperature.get() >= 0 ? '+' : '-') +
-        ('' + Math.abs(plan.performanceData.approachTemperature.get()).toFixed(0)).padStart(2).replace(/ /g, '\xa0') +
-        '°{end}';
-    } else if (closeToDest && isActivePlan) {
-      tempCell = '{amber}___°{end}';
-    }
-    mcdu.onLeftInput[1] = (value, scratchpadCallback) => {
-      if (mcdu.setPerfApprTemp(value, forPlan)) {
-        CDUPerformancePage.ShowAPPRPage(mcdu, forPlan);
-      } else {
-        scratchpadCallback();
+    let tempCell = '---°';
+    if (hasDestination) {
+      tempCell = '{cyan}[\xa0]°{end}';
+      if (Number.isFinite(plan.performanceData.approachTemperature.get())) {
+        tempCell =
+          '{cyan}' +
+          (plan.performanceData.approachTemperature.get() >= 0 ? '+' : '-') +
+          ('' + Math.abs(plan.performanceData.approachTemperature.get()).toFixed(0)).padStart(2).replace(/ /g, '\xa0') +
+          '°{end}';
+      } else if (closeToDest && isActivePlan) {
+        tempCell = '{amber}___°{end}';
       }
-    };
-    let magWindHeadingCell = '[\xa0]';
-    if (Number.isFinite(plan.performanceData.approachWindDirection.get())) {
-      magWindHeadingCell = ('' + plan.performanceData.approachWindDirection.get().toFixed(0)).padStart(3, '0');
+      mcdu.onLeftInput[1] = (value, scratchpadCallback) => {
+        if (mcdu.setPerfApprTemp(value, forPlan)) {
+          CDUPerformancePage.ShowAPPRPage(mcdu, forPlan);
+        } else {
+          scratchpadCallback();
+        }
+      };
     }
-    let magWindSpeedCell = '[\xa0]';
-    if (Number.isFinite(plan.performanceData.approachWindMagnitude.get())) {
-      magWindSpeedCell = plan.performanceData.approachWindMagnitude.get().toFixed(0).padStart(3, '0');
+
+    let magWindHeadingCell = '---';
+    if (hasDestination) {
+      magWindHeadingCell = '{cyan}[\xa0]{end}';
+      if (Number.isFinite(plan.performanceData.approachWindDirection.get())) {
+        magWindHeadingCell = ('' + plan.performanceData.approachWindDirection.get().toFixed(0)).padStart(3, '0');
+      }
+    }
+    let magWindSpeedCell = '---';
+    if (hasDestination) {
+      magWindSpeedCell = '{cyan}[\xa0]{end}';
+      if (Number.isFinite(plan.performanceData.approachWindMagnitude.get())) {
+        magWindSpeedCell = plan.performanceData.approachWindMagnitude.get().toFixed(0).padStart(3, '0');
+      }
     }
     mcdu.onLeftInput[2] = (value, scratchpadCallback) => {
       if (mcdu.setPerfApprWind(value, forPlan)) {
@@ -1086,7 +1100,6 @@ export class CDUPerformancePage {
     };
 
     let transAltCell = '\xa0'.repeat(5);
-    const hasDestination = !!plan.destinationAirport;
 
     if (hasDestination) {
       const transitionLevel = plan.performanceData.transitionLevel.get();
@@ -1156,28 +1169,24 @@ export class CDUPerformancePage {
     };
 
     const approach = plan.approach;
-    const isILS = approach && approach.type === ApproachType.Ils;
-    let radioLabel = '';
+    const radioLabel = 'RADIO';
     let radioCell = '';
-    if (isILS) {
-      radioLabel = 'RADIO';
 
-      const dh = plan.performanceData.approachRadioMinimum.get();
-      if (typeof dh === 'number') {
-        radioCell = dh.toFixed(0);
-      } else if (dh === 'NO DH') {
-        radioCell = 'NO DH';
-      } else {
-        radioCell = '[\xa0]';
-      }
-      mcdu.onRightInput[2] = (value, scratchpadCallback) => {
-        if (mcdu.setPerfApprDH(value, forPlan) && mcdu.setPerfApprMDA(Keypad.clrValue, forPlan)) {
-          CDUPerformancePage.ShowAPPRPage(mcdu, forPlan);
-        } else {
-          scratchpadCallback();
-        }
-      };
+    const dh = plan.performanceData.approachRadioMinimum.get();
+    if (typeof dh === 'number') {
+      radioCell = dh.toFixed(0);
+    } else if (dh === 'NO DH') {
+      radioCell = 'NO DH';
+    } else {
+      radioCell = '[\xa0]';
     }
+    mcdu.onRightInput[2] = (value, scratchpadCallback) => {
+      if (mcdu.setPerfApprDH(value, forPlan) && mcdu.setPerfApprMDA(Keypad.clrValue, forPlan)) {
+        CDUPerformancePage.ShowAPPRPage(mcdu, forPlan);
+      } else {
+        scratchpadCallback();
+      }
+    };
 
     const bottomRowLabels = ['\xa0PREV', 'NEXT\xa0'];
     const bottomRowCells = ['<PHASE', 'PHASE>'];
@@ -1233,7 +1242,8 @@ export class CDUPerformancePage {
       /* 2L */ [`${tempCell}${'\xa0'.repeat(6)}O=${cleanCell}`, baroCell + '[color]cyan'],
       /* 3l */ ['MAG WIND', radioLabel],
       /* 3L */ [
-        `{cyan}${magWindHeadingCell}°/${magWindSpeedCell}{end}\xa0\xa0S=${sltRetrCell}`,
+        `${magWindHeadingCell}${hasDestination ? '{cyan}°/{end}' : '{white}°/{end}'},
+        ${magWindSpeedCell}\xa0\xa0S=${sltRetrCell}`,
         radioCell + '[color]cyan',
       ],
       /* 4l */ ['TRANS ALT'],

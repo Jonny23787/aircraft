@@ -5,6 +5,7 @@ import { CDUIRSMonitor } from './A320_Neo_CDU_IRSMonitor';
 import { CDUNavaidPage } from './A320_Neo_CDU_NavaidPage';
 import { CDUPilotsWaypoint } from './A320_Neo_CDU_PilotsWaypoint';
 import { CDUPositionMonitorPage } from './A320_Neo_CDU_PositionMonitorPage';
+import { CDURunwayPage } from './A320_Neo_CDU_RunwayPage';
 import { CDUWaypointPage } from './A320_Neo_CDU_WaypointPage';
 import { LegacyFmsPageInterface } from '../legacy/LegacyFmsPageInterface';
 
@@ -86,7 +87,7 @@ export class CDUDataIndexPage {
       ['', 'STORED\xa0[color]inop'],
       ['<NAVAIDS', 'NAVAIDS>[color]inop'],
       ['', 'STORED\xa0[color]inop'],
-      ['<RUNWAYS[color]inop', 'RUNWAYS>[color]inop'],
+      ['<RUNWAYS', 'RUNWAYS>[color]inop'],
       ['', 'STORED\xa0[color]inop'],
       ['<ROUTES[color]inop', 'ROUTES>[color]inop'],
       [],
@@ -116,6 +117,14 @@ export class CDUDataIndexPage {
     };
 
     mcdu.leftInputDelay[1] = () => {
+      return mcdu.getDelaySwitchPage();
+    };
+
+    mcdu.onLeftInput[2] = () => {
+      CDURunwayPage.ShowPage(mcdu);
+    };
+
+    mcdu.leftInputDelay[2] = () => {
       return mcdu.getDelaySwitchPage();
     };
 
