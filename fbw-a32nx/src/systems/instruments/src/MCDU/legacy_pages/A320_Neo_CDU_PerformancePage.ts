@@ -1087,14 +1087,15 @@ export class CDUPerformancePage {
     if (hasDestination) {
       magWindHeadingCell = '{cyan}[\xa0]{end}';
       if (Number.isFinite(plan.performanceData.approachWindDirection.get())) {
-        magWindHeadingCell = ('' + plan.performanceData.approachWindDirection.get().toFixed(0)).padStart(3, '0');
+        magWindHeadingCell =
+          '{cyan}' + ('' + plan.performanceData.approachWindDirection.get().toFixed(0)).padStart(3, '0');
       }
     }
     let magWindSpeedCell = '---';
     if (hasDestination) {
       magWindSpeedCell = '{cyan}[\xa0]{end}';
       if (Number.isFinite(plan.performanceData.approachWindMagnitude.get())) {
-        magWindSpeedCell = plan.performanceData.approachWindMagnitude.get().toFixed(0).padStart(3, '0');
+        magWindSpeedCell = '{cyan}' + plan.performanceData.approachWindMagnitude.get().toFixed(0).padStart(3, '0');
       }
     }
     mcdu.onLeftInput[2] = (value, scratchpadCallback) => {
