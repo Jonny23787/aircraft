@@ -121,6 +121,8 @@
 1. [A32NX/FWS] Add `THR LEVERS NOT SET` master caution - @FozzieHi (fozzie)
 1. [A380X/PFD] Add "APPR 1" on LS button press if no capability computed by systems - @BravoMike99 (bruno_pt99)
 1. [A32NX/SD] Add selected metric altitude indication to SD permanent area - @Jonny23787 (Jonathan)
+1. [A32NX/SD] Fix pack indications on BLEED SD page when FADEC unpowered - @Jonny23787 (Jonathan)
+1. [A32NX/SD] Add VS indications to DOOR page - @Jonny23787 (Jonathan)
 
 ## 0.14.0
 
