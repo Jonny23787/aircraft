@@ -1250,8 +1250,8 @@ export class CDUPerformancePage {
       /* 2L */ [`${tempCell}${'\xa0'.repeat(6)}O=${cleanCell}`, baroCell + '[color]cyan'],
       /* 3l */ ['MAG WIND', radioLabel],
       /* 3L */ [
-        `${magWindHeadingCell}${hasDestination ? '{cyan}°/{end}' : '{white}°/{end}'},
-        ${magWindSpeedCell}\xa0\xa0S=${sltRetrCell}`,
+        `${magWindHeadingCell}${hasDestination ? '{cyan}°/{end}' : '{white}°/{end}'}` +
+          `${magWindSpeedCell}\xa0\xa0S=${sltRetrCell}`,
         radioCell + '[color]cyan',
       ],
       /* 4l */ ['TRANS ALT'],

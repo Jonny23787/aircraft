@@ -129,7 +129,7 @@
 1. [FMS] Fixed an issue where the WPT overlay on the ND showed terminal waypoints in enroute range - @tracernz (Mike)
 1. [A32NX/FMS] Fix GPS MONITOR page formatting - @Jonny23787 (Jonathan)
 1. [A32NX/FMS] Add RUNWAY data page - @Jonny23787 (Jonathan)
-1. [A32NX/FMS] Fix APPR PERF field formatting when no destination entered - @Jonny23787 (Jonathan)
+1. [A32NX/FMS] Fix APPR PERF page formatting when no destination entered - @Jonny23787 (Jonathan)
 1. [A32NX/FMS] Add HOLD and OFFSET prompt to PPOS LAT REV page - @Jonny23787 (Jonathan)
 
 ## 0.14.0
