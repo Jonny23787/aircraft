@@ -1,7 +1,8 @@
 // @ts-strict-ignore
-// Copyright (c) 2021-2025 FlyByWire Simulations
+// Copyright (c) 2021-2026 FlyByWire Simulations
 // SPDX-License-Identifier: GPL-3.0
 
+import { Runway } from '@flybywiresim/fbw-sdk';
 import { Keypad } from '../legacy/A320_Neo_CDU_Keypad';
 import { CDUPilotsWaypoint } from './A320_Neo_CDU_PilotsWaypoint';
 import { NXSystemMessages } from '../messages/NXSystemMessages';
@@ -13,11 +14,11 @@ import { LegacyFmsPageInterface } from '../legacy/LegacyFmsPageInterface';
 */
 
 export class CDURunwayPage {
-  static ShowPage(mcdu: LegacyFmsPageInterface, runway = undefined) {
+  static ShowPage(mcdu: LegacyFmsPageInterface, runway: Runway | undefined) {
     mcdu.clearDisplay();
     mcdu.page.Current = mcdu.page.RunwayPage;
     mcdu.returnPageCallback = () => {
-      CDURunwayPage.ShowPage(mcdu);
+      CDURunwayPage.ShowPage(mcdu, runway);
     };
 
     let runwayValue = '_______[color]amber';
@@ -37,9 +38,9 @@ export class CDURunwayPage {
       lsIdentLabel = '\xa0\xa0\xa0\xa0\xa0\xa0\xa0\xa0LS IDENT';
       lsIdentValue = `${runway.lsIdent}[color]green`;
       latLongLabel = '\xa0\xa0\xa0\xa0LAT/LONG';
-      latLongValue = `${CDUPilotsWaypoint.formatLatLong(runway.thresholdLocation)}[color]green`;
+      latLongValue = `${CDUPilotsWaypoint.formatLatLong(runway.thresholdLocation)}[color]green`; // needs verifying
       lengthLabel = '\xa0LENGTH';
-      lengthValue = '';
+      lengthValue = `${runway.length}[color]green`;
       elvLabel = '\xa0ELV';
       elvValue = `${runway.thresholdLocation.alt}[color]green`;
       crsLabel = '\xa0CRS';
@@ -52,7 +53,7 @@ export class CDURunwayPage {
         return;
       }
 
-      mcdu.getOrSelectWaypointByIdent(value, (res) => {
+      mcdu.getOrSelectRunwayByIdent(value, (res) => {
         if (res) {
           CDURunwayPage.ShowPage(mcdu, res);
         } else {

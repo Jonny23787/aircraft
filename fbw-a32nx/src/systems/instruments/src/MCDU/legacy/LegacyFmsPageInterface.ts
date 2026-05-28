@@ -15,6 +15,7 @@ import {
   NdbNavaid,
   TerminalNdbNavaid,
   VhfNavaid,
+  Runway,
 } from '@flybywiresim/fbw-sdk';
 import { ScratchpadDataLink } from './A320_Neo_CDU_Scratchpad';
 import { AdfRadioTuningStatus, MmrRadioTuningStatus, VorRadioTuningStatus } from '@fmgc/navigation/NavaidTuner';
@@ -206,6 +207,7 @@ interface LegacyFmsPageFmsInterface extends FmsDataInterface, FmsDisplayInterfac
   deselectNavaid(icao: string): void;
   reselectNavaid(icao: string): void;
   getOrSelectWaypointByIdent(ident: string, callback: (fix: Fix) => void): void;
+  getOrSelectRunwayByIdent(ident: string, callback: (runway: Runway) => void): void;
   getIsaTemp(alt: number): number;
   isFuelPlanningInProgress(forPlan: FlightPlanIndex): boolean;
   getUnconfirmedBlockFuel(forPlan: FlightPlanIndex): number | undefined;

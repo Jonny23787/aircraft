@@ -25,6 +25,7 @@ import {
   NXUnits,
   Units,
   RegisteredSimVar,
+  Runway,
   TerminalNdbNavaid,
   UpdateThrottler,
   VhfNavaid,
@@ -2569,6 +2570,10 @@ export abstract class FMCMainDisplay implements FmsDataInterface, FmsDisplayInte
     callback: (navaid: EnrouteNdbNavaid | TerminalNdbNavaid | VhfNavaid) => void,
   ): void {
     this._getOrSelectWaypoints(this.navigationDatabase.searchAllNavaid.bind(this.navigationDatabase), ident, callback);
+  }
+
+  public getOrSelectRunwayByIdent(ident: string, callback: (runway: Runway) => void): void {
+    this._getOrSelectWaypoints(this.navigationDatabase.searchWaypoint.bind(this.navigationDatabase), ident, callback);
   }
 
   /**
