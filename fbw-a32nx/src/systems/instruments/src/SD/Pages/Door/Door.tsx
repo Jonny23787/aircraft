@@ -3,7 +3,7 @@
 // SPDX-License-Identifier: GPL-3.0
 
 import React from 'react';
-import { useSimVar, useArinc429Var } from '@flybywiresim/fbw-sdk';
+import { useSimVar, useArinc429Var } from '@flybywiresim/fbw-sdk-react';
 
 import './Door.scss';
 
